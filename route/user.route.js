@@ -237,7 +237,7 @@ userRoute.get("/admin/users/:id",authMiddleware("admin"),async(req,res)=>{
         if(!AppData){
             res.status(200).json({ "msg":"user not found."})
         }else{
-        res.status(200).json({ "msg":"booked Appointment list",data:AppData})
+        res.status(200).json({ "msg":"user list",data:AppData})
            
         }
     }catch (error) {
@@ -263,7 +263,7 @@ userRoute.delete("/admin/users/:id",authMiddleware("admin"),async(req,res)=>{
     }
 })
 
-// DELETE /admin/users/:id → Delete a user
+
 // GET /admin/appointments → View all appointments
 // DELETE /admin/appointments/:id → Delete an appointment
 // GET /admin/reports → Download a CSV file containing system statistics
