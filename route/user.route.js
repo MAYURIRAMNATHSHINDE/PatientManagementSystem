@@ -215,12 +215,12 @@ userRoute.put("/doctor/appointments/:id",authMiddleware("doctor"),async(req,res)
 
 userRoute.get("/admin/users",authMiddleware("admin"),async(req,res)=>{
     try{
-        const userId=req.doctorId;
-        const AppData= await AppointmentModel.find({userId})
+       
+        const AppData= await AppointmentModel.find()
         if(!AppData){
             res.status(200).json({ "msg":"user not found."})
         }else{
-        res.status(200).json({ "msg":"booked Appointment list",data:AppData})
+        res.status(200).json({ "msg":"Admn can view all users data :",data:AppData})
            
         }
     }catch (error) {
@@ -231,9 +231,9 @@ userRoute.get("/admin/users",authMiddleware("admin"),async(req,res)=>{
 
 userRoute.get("/admin/users/:id",authMiddleware("admin"),async(req,res)=>{
     try{
-        const userId=req.doctorId;
+       
         const id=req.params.id
-        const AppData= await AppointmentModel.find({userId})
+        const AppData= await AppointmentModel.find({id})
         if(!AppData){
             res.status(200).json({ "msg":"user not found."})
         }else{
@@ -246,14 +246,11 @@ userRoute.get("/admin/users/:id",authMiddleware("admin"),async(req,res)=>{
     }
 })
 
-/*
-Admin Routes
-GET /admin/users → View all users
-GET /admin/users/:id → View a specific user
-DELETE /admin/users/:id → Delete a user
-GET /admin/appointments → View all appointments
-DELETE /admin/appointments/:id → Delete an appointment
-GET /admin/reports → Download a CSV file containing system statistics
+
+// DELETE /admin/users/:id → Delete a user
+// GET /admin/appointments → View all appointments
+// DELETE /admin/appointments/:id → Delete an appointment
+// GET /admin/reports → Download a CSV file containing system statistics
 
 
 
