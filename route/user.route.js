@@ -283,7 +283,7 @@ userRoute.get("/admin/users/:id",authMiddleware("admin"),async(req,res)=>{
 // DELETE /admin/appointments/:id → Delete an appointment
 // GET /admin/reports → Download a CSV file containing system statistics
 
-userRoute.delete("/admin/users/:id",authMiddleware("admin"),async(req,res)=>{
+userRoute.delete("/admin/appointments/:id",authMiddleware("admin"),async(req,res)=>{
     try{
        
         const id=req.params.id
@@ -292,7 +292,7 @@ userRoute.delete("/admin/users/:id",authMiddleware("admin"),async(req,res)=>{
             res.status(200).json({ "msg":"user not found."})
         }else{
             const AppData1= await AppointmentModel.findByIdAndDelete({id})
-        res.status(200).json({ "msg":"user deleted"})
+        res.status(200).json({ "msg":"appointment deleted deleted"})
            
         }
     }catch (error) {
