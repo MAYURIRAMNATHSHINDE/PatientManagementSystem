@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 
 
-const UserSchema = new mongoose.connect(
+
+const UserSchema = new mongoose.Schema(
     {
         name: {type:String},  //req.body
         email: {type:String,unique:true},     //req.body
@@ -9,7 +10,7 @@ const UserSchema = new mongoose.connect(
         password: {type:String},                //req.body and hashed
         role: {type:String,enum:["admin", "doctor", "patient"],default:"patient"},          //req.body
         specialization: {type:String,enum:["nerves", "heart", "skin","lungs"]},     //(only for doctors)
-        availableDays: {type:Array,enum:[["Sun", "Mon", "Tue","lungs"]]}         //(only for doctors)
+        availableDays: {type:Array,days:{type:String,enum:[["Sun", "Mon", "Tue","Wed", "Thu", "Fri", "Sat"]]}}    ////(only for doctors)     //(only for doctors)
     }
 )
 
