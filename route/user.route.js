@@ -150,7 +150,21 @@ userRoute.post("/patient/appointments/request-delete/:id",authMiddleware("admin"
 
 
 
-
+userRoute.get("/doctor/appointments",authMiddleware("doctor"),async(req,res)=>{
+    try{
+        const userId=req.doctorId;
+        const AppData= await AppointmentModel.find({userId})
+        if(!AppData){
+            res.status(200).json({ "msg":"user not found."})
+        }else{
+        res.status(200).json({ "msg":"booked Appointment list",data:AppData})
+           
+        }
+    }catch (error) {
+       console.log(error)
+        res.status(500).json({ "msg": "something went wrong in get appointment list.", error })
+    }
+})
 /*
 Admin Routes
 GET /admin/users → View all users
@@ -162,10 +176,8 @@ GET /admin/reports → Download a CSV file containing system statistics
 Doctor Routes
 GET /doctor/appointments → View all appointments assigned to the doctor
 PUT /doctor/appointments/:id → Update fees, prescription, and isDiagnosisDone (after appointment date)
-Patient Routes
 
-PUT /patient/appointments/:id → Update appointment details (only if more than 24 hours remain)
-POST /patient/appointments/request-delete/:id → Request admin to delete an appointment (stored in Redis)
+
 
 */
 
