@@ -263,7 +263,22 @@ userRoute.delete("/admin/users/:id",authMiddleware("admin"),async(req,res)=>{
     }
 })
 
-
+userRoute.get("/admin/users/:id",authMiddleware("admin"),async(req,res)=>{
+    try{
+       
+        const id=req.params.id
+        const AppData= await AppointmentModel.find({id})
+        if(!AppData){
+            res.status(200).json({ "msg":"user not found."})
+        }else{
+        res.status(200).json({ "msg":"appointment list",data:AppData})
+           
+        }
+    }catch (error) {
+       console.log(error)
+        res.status(500).json({ "msg": "something went wrong in get appointment list.", error })
+    }
+})
 // GET /admin/appointments → View all appointments
 // DELETE /admin/appointments/:id → Delete an appointment
 // GET /admin/reports → Download a CSV file containing system statistics
