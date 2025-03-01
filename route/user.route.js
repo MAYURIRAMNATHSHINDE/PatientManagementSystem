@@ -64,7 +64,7 @@ userRoute.post("/auth/login", async (req, res) => {
 userRoute.post("/patient/appointments",authMiddleware("patient"),async(req,res)=>{
     try{
         const appointmentDateTime=new Date()
-        const patientData= await AppointmentModel.create({...req.body,appointmentDateTime:appointmentDateTime})
+        const patientData= await AppointmentModel.create({...req.body,appointmentDateTime:appointmentDateTime,patientId:req.userId})
         res.status(200).json({ "msg":"Appointment bookes successfully",patientData})
     }catch (error) {
        console.log(error)
@@ -89,8 +89,33 @@ userRoute.get("/patient/appointments",authMiddleware("patient"),async(req,res)=>
         res.status(500).json({ "msg": "something went wrong in get appointment list.", error })
     }
 })
+//PUT /patient/appointments/:id → Update appointment details (only if more than 24 hours remain)
 
+userRoute.put("/patient/appointments/:id",authMiddleware("patient"),async(req,res)=>{
+    try{
+    const id=req.params.id;
+    const userId=req.patientId;
+    const patientData= await AppointmentModel.find({userId})
 
+    if(!patientData){
+        res.status(200).json({ "msg":"patient Appointment data is not found.",patientData})
+    }
+
+    const currentDateTime=new Date()
+    console.log(currentDateTime)
+   // const appointmentdate=new Date(patientData.appointmentDateTime)
+    //console.log(appointmentdate)
+    const timeDifference=(new Date(patientData.appointmentDateTime) - currentDateTime)/(1000*60*60)
+    if(timeDifference<24){
+        res.status(200).json({ "msg":"Appointment can only updated only 24 hour remain."})
+    }
+    const Data= await AppointmentModel.findByIdAndUpdate(id,req.body,{new:true})
+    res.status(200).json({ "msg":"Appointment updated successfully",Data})   
+    }catch (error) {
+       console.log(error)
+        res.status(500).json({ "msg": "something went wrong while updating appointment.", error })
+    }
+})
 
 
 /*
@@ -106,7 +131,6 @@ GET /doctor/appointments → View all appointments assigned to the doctor
 PUT /doctor/appointments/:id → Update fees, prescription, and isDiagnosisDone (after appointment date)
 Patient Routes
 
-GET /patient/appointments → View all booked appointments
 PUT /patient/appointments/:id → Update appointment details (only if more than 24 hours remain)
 POST /patient/appointments/request-delete/:id → Request admin to delete an appointment (stored in Redis)
 
