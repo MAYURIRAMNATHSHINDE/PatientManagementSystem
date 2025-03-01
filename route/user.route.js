@@ -5,8 +5,8 @@ const jwt = require('jsonwebtoken');
 const { UserModel } = require("../model/user.model");
 const { authMiddleware } = require("../middleware/auth");
 const { AppointmentModel } = require("../model/appointment.model");
-
-
+const redis = require("ioredis");
+var cron = require('node-cron');
 const userRoute = express.Router()
 
 const SALT_ROUND = Number(process.env.SALT_ROUND);
@@ -116,6 +116,39 @@ userRoute.put("/patient/appointments/:id",authMiddleware("patient"),async(req,re
         res.status(500).json({ "msg": "something went wrong while updating appointment.", error })
     }
 })
+
+
+cron.schedule('*/2 * * * *',async () => {
+    const cacheddata=await redis.get("deleteRequest")
+    let parsedCachedData=JSON.parse(cacheddata)
+    await AppointmentModel.deleteMany(parsedCachedData)
+    console.log('appointments deleted. cronjob is working');
+  });
+
+
+userRoute.post("/patient/appointments/request-delete/:id",authMiddleware("admin"),async(req,res)=>{
+    try{
+        const id=req.params.id;
+        const cachedkey="deleteRequest"
+        const cacheddata=await redis.get(cachedkey)
+
+        if(cacheddata){
+           
+            let parsedCachedData=JSON.parse(cacheddata)
+            res.status(200).json({ parsedCachedData })
+        }
+        else{
+            const parsed=[req.body];
+            await redis.set(cachedkey,JSON.stringify(deleteRequest),"EX",200)
+        }
+       
+    }catch (error) {
+       console.log(error)
+        res.status(500).json({ "msg": "something went wrong.", error })
+    }
+})
+
+
 
 
 /*
