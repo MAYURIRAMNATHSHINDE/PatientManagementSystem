@@ -9,7 +9,7 @@ const app=express()
 app.use(express.json())
 app.use("/user",userRoute)
 PORT=process.env.PORT || 8080
-
+app.use(LoggerMiddleware)
 
 
 app.listen(PORT,()=>{
