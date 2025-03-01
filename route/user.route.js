@@ -7,10 +7,30 @@ const { authMiddleware } = require("../middleware/auth");
 const { AppointmentModel } = require("../model/appointment.model");
 const redis = require("ioredis");
 var cron = require('node-cron');
+const ObjectsToCsv = require('objects-to-csv');
 const userRoute = express.Router()
 
 const SALT_ROUND = Number(process.env.SALT_ROUND);
 
+
+
+
+const data = [
+    {Totalnumberofdoctors: UserModel.find({"role":"doctor"}).count()},
+    { Totalnumberofpatients: UserModel.find({"role":"patient"}).count()},
+    {Totalnumberofappointments: UserModel.countDocuments()},
+  ];
+
+
+  (async () => {
+    const csv = new ObjectsToCsv(data);
+   
+    // Save to file:
+    await csv.toDisk('./report.csv');
+   
+    // Return the CSV file as string:
+    console.log(await csv.toString());
+  })();
 
 
 ////////////////////******** SignUp Route ************///////////////////////
@@ -149,7 +169,7 @@ userRoute.post("/patient/appointments/request-delete/:id",authMiddleware("admin"
 })
 
 
-
+////////////////////////////////***********  Doctor Routes  ***********///////////////////////////////
 userRoute.get("/doctor/appointments",authMiddleware("doctor"),async(req,res)=>{
     try{
         const userId=req.doctorId;
@@ -191,6 +211,41 @@ userRoute.put("/doctor/appointments/:id",authMiddleware("doctor"),async(req,res)
 })
 
 
+////////////////////////////////***********  Admin Routes  ***********///////////////////////////////
+
+userRoute.get("/admin/users",authMiddleware("admin"),async(req,res)=>{
+    try{
+        const userId=req.doctorId;
+        const AppData= await AppointmentModel.find({userId})
+        if(!AppData){
+            res.status(200).json({ "msg":"user not found."})
+        }else{
+        res.status(200).json({ "msg":"booked Appointment list",data:AppData})
+           
+        }
+    }catch (error) {
+       console.log(error)
+        res.status(500).json({ "msg": "something went wrong in get appointment list.", error })
+    }
+})
+
+userRoute.get("/admin/users/:id",authMiddleware("admin"),async(req,res)=>{
+    try{
+        const userId=req.doctorId;
+        const id=req.params.id
+        const AppData= await AppointmentModel.find({userId})
+        if(!AppData){
+            res.status(200).json({ "msg":"user not found."})
+        }else{
+        res.status(200).json({ "msg":"booked Appointment list",data:AppData})
+           
+        }
+    }catch (error) {
+       console.log(error)
+        res.status(500).json({ "msg": "something went wrong in get appointment list.", error })
+    }
+})
+
 /*
 Admin Routes
 GET /admin/users → View all users
@@ -199,9 +254,7 @@ DELETE /admin/users/:id → Delete a user
 GET /admin/appointments → View all appointments
 DELETE /admin/appointments/:id → Delete an appointment
 GET /admin/reports → Download a CSV file containing system statistics
-Doctor Routes
-GET /doctor/appointments → View all appointments assigned to the doctor
-PUT /doctor/appointments/:id → Update fees, prescription, and isDiagnosisDone (after appointment date)
+
 
 
 
