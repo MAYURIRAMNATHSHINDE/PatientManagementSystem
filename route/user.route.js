@@ -165,6 +165,32 @@ userRoute.get("/doctor/appointments",authMiddleware("doctor"),async(req,res)=>{
         res.status(500).json({ "msg": "something went wrong in get appointment list.", error })
     }
 })
+
+
+
+
+userRoute.put("/doctor/appointments/:id",authMiddleware("doctor"),async(req,res)=>{
+    try{
+    const id=req.params.id;
+    const userId=req.patientId;
+    const AppointmentData= await AppointmentModel.find({userId})
+
+    if(!AppointmentData){
+        res.status(200).json({ "msg":"patient Appointment data is not found.",AppointmentData})
+    }
+    const currentDate=new Date()
+    console.log(currentDateTime)
+    const appointmentDate=(new Date(patientData.appointmentDateTime))
+    if(currentDate>appointmentDate){
+    const Data= await AppointmentModel.findByIdAndUpdate(id,req.body,{new:true})
+    res.status(200).json({ "msg":"Appointment updated successfully",Data})   
+    }}catch (error) {
+       console.log(error)
+        res.status(500).json({ "msg": "something went wrong while updating appointment.", error })
+    }
+})
+
+
 /*
 Admin Routes
 GET /admin/users → View all users
