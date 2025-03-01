@@ -15,6 +15,7 @@ const authMiddleware = (role) => {
                     req.userId=decoded.userId;
                     req.role=decoded.role;
                     console.log(decoded.userId);
+                    console.log(decoded.role)
                     next()
                 }else{
                     res.status(401).json({ "msg": "Unauthorized"})

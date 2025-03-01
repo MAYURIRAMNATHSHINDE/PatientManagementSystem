@@ -74,6 +74,21 @@ userRoute.post("/patient/appointments",authMiddleware("patient"),async(req,res)=
 
 
 
+userRoute.get("/patient/appointments",authMiddleware("patient"),async(req,res)=>{
+    try{
+        const userId=req.patientId;
+        const patientData= await AppointmentModel.find({userId})
+        if(!patientData){
+            res.status(200).json({ "msg":"user not found."})
+        }else{
+        res.status(200).json({ "msg":"booked Appointment list",data:patientData})
+           
+        }
+    }catch (error) {
+       console.log(error)
+        res.status(500).json({ "msg": "something went wrong in get appointment list.", error })
+    }
+})
 
 
 
@@ -90,7 +105,7 @@ Doctor Routes
 GET /doctor/appointments → View all appointments assigned to the doctor
 PUT /doctor/appointments/:id → Update fees, prescription, and isDiagnosisDone (after appointment date)
 Patient Routes
-POST /patient/appointments → Book a new appointment
+
 GET /patient/appointments → View all booked appointments
 PUT /patient/appointments/:id → Update appointment details (only if more than 24 hours remain)
 POST /patient/appointments/request-delete/:id → Request admin to delete an appointment (stored in Redis)
